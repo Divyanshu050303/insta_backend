@@ -4,6 +4,7 @@ import (
 	"divyanshu050303/insta_backend/database"
 	"divyanshu050303/insta_backend/models"
 	"divyanshu050303/insta_backend/routes"
+	"fmt"
 	"log"
 	"os"
 
@@ -19,18 +20,21 @@ func main() {
 	config := &database.Config{
 		Host:     os.Getenv("DB_HOST"),
 		Port:     os.Getenv("DB_PORT"),
-		User:     os.Getenv("DB_USER"),
 		Password: os.Getenv("DB_PASS"),
-		DBName:   os.Getenv("DB_NAME"),
+		User:     os.Getenv("DB_USER"),
 		SSLMode:  os.Getenv("DB_SSLMODE"),
+		DBName:   os.Getenv("DB_NAME"),
 	}
+	fmt.Println("Database Config:", config)
 	db, err := database.NewConnection(config)
 	if err != nil {
-		log.Fatal("Cound not load the database")
+		fmt.Println("Error connecting to database:", err)
+		log.Fatal("Could Not load datebase")
 	}
+	fmt.Println("Database Connection Established")
 	err = models.Migrate(db)
 	if err != nil {
-		log.Fatal("Cound not migrate the database")
+		log.Fatal("Count not migrate the databse")
 	}
 	app := fiber.New()
 	routes.SetUpUserRoutes(app, db)
