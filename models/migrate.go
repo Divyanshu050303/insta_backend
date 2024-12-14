@@ -1,6 +1,8 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 func Migrate(db *gorm.DB) error {
 	if err := MigrateUser(db); err != nil {
@@ -9,5 +11,6 @@ func Migrate(db *gorm.DB) error {
 	if err := MigrateFollowers(db); err != nil {
 		return err
 	}
+
 	return nil
 }

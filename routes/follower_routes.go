@@ -16,4 +16,5 @@ func SetupFollowerRoutes(app *fiber.App, db *gorm.DB) {
 	api.Delete("/unFollowUser", followersController.UnfollowUser)
 	api.Get("/getFollowers/:userId", followersController.GetFollowers)
 	api.Get("/getFollowing/:userId", followersController.GetFollowing)
+	api.Get("/getUserProfile/:userId", followersController.GetUserProfile)
 }

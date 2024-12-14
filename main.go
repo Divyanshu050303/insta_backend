@@ -3,6 +3,7 @@ package main
 import (
 	"divyanshu050303/insta_backend/database"
 	"divyanshu050303/insta_backend/models"
+	"divyanshu050303/insta_backend/models/post"
 	"divyanshu050303/insta_backend/routes"
 	"fmt"
 	"log"
@@ -33,12 +34,18 @@ func main() {
 	}
 	fmt.Println("Database Connection Established")
 	err = models.Migrate(db)
+
+	if err != nil {
+		log.Fatal("Count not migrate the databse")
+	}
+	err = post.MigratePostData(db)
 	if err != nil {
 		log.Fatal("Count not migrate the databse")
 	}
 	app := fiber.New()
 	routes.SetUpUserRoutes(app, db)
 	routes.SetupFollowerRoutes(app, db)
+	routes.SetUpPostRoute(app, db)
 	app.Listen(":8000")
 
 }

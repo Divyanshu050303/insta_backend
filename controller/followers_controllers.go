@@ -145,3 +145,44 @@ func (ctrl *FollowersControllers) GetFollowing(c *fiber.Ctx) error {
 
 	return nil
 }
+func (ctrl *FollowersControllers) GetUserProfile(c *fiber.Ctx) error {
+	id := c.Params("userId")
+	err := helper.CheckUserIsLoggedInOrNot(c)
+	if err != nil {
+		helper.ApiResponse(c, http.StatusUnauthorized, "token is missing", nil)
+		return err
+	}
+	if id == "" {
+		helper.ApiResponse(c, http.StatusBadRequest, "Bad Request", nil)
+	}
+	var user models.UserModels
+	err = ctrl.Repo.DB.Where("user_id=?", id).Find(&user).Error
+	if err != nil {
+		helper.ApiResponse(c, http.StatusBadRequest, "Bad Request", nil)
+		return err
+	}
+
+	var followerCount int64
+	err = ctrl.Repo.DB.Model(&models.Followers{}).Where("user_id=?", id).Count(&followerCount).Error
+	if err != nil {
+		helper.ApiResponse(c, http.StatusBadRequest, "Bad Request", nil)
+		return err
+	}
+	var followingCount int64
+	err = ctrl.Repo.DB.Model(&models.Followers{}).Where("follower_id=?", id).Count(&followingCount).Error
+	if err != nil {
+		helper.ApiResponse(c, http.StatusBadRequest, "Bad Request", nil)
+		return err
+	}
+
+	userInfo := map[string]interface{}{
+		"id":             user.UserId,
+		"userName":       user.UserName,
+		"userEmail":      user.UserEmail,
+		"followerCount":  followerCount,
+		"followingCount": followingCount,
+	}
+	helper.ApiResponse(c, http.StatusOK, "Successfully fetched user profile", userInfo)
+
+	return nil
+}
