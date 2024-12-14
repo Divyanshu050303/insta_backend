@@ -6,5 +6,8 @@ func Migrate(db *gorm.DB) error {
 	if err := MigrateUser(db); err != nil {
 		return err
 	}
+	if err := MigrateFollowers(db); err != nil {
+		return err
+	}
 	return nil
 }

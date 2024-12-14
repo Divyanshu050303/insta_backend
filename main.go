@@ -38,6 +38,7 @@ func main() {
 	}
 	app := fiber.New()
 	routes.SetUpUserRoutes(app, db)
+	routes.SetupFollowerRoutes(app, db)
 	app.Listen(":8000")
 
 }
