@@ -14,39 +14,37 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func UploadPost(userId string, c *fiber.Ctx) (url []string, err error) {
+func UploadPost(userId string, c *fiber.Ctx) (url string, err error) {
 	fmt.Printf("inside upload post function")
 	cld, err := SetupCloudinary()
 	if err != nil {
 		ApiResponse(c, http.StatusBadRequest, "Connection is not setup with couldinary ", nil)
-		return nil, err
+		return "", err
 	}
 	file, err := c.FormFile("file")
 	if err != nil {
 		fmt.Printf("Error retrieving file: %v\n", err)
 		ApiResponse(c, http.StatusBadRequest, "Failed to retrieve file", nil)
-		return nil, err
+		return "", err
 	}
 
 	// Debugging log to confirm file retrieval
 	fmt.Printf("File name: %s, Size: %d\n", file.Filename, file.Size)
-	var urls []string
+
 	fileHeader, err := file.Open()
 	if err != nil {
 		ApiResponse(c, http.StatusBadRequest, "Bad Request", nil)
 		fmt.Printf("inside upload post function3")
-		return nil, err
+		return "", err
 	}
 
 	postUrl, err := UploadMediaToCloudinary(userId, fileHeader, cld, c)
 	if err != nil {
 		ApiResponse(c, http.StatusBadRequest, "Bad Request", nil)
-		return nil, err
+		return "", err
 	}
 
-	urls = append(urls, postUrl)
-	fmt.Println(urls)
-	return urls, nil
+	return postUrl, nil
 
 }
 func UploadMediaToCloudinary(userId string, file multipart.File, cld *cloudinary.Cloudinary, c *fiber.Ctx) (url string, err error) {

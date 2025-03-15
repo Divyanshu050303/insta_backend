@@ -3,6 +3,7 @@ package controller
 import (
 	"divyanshu050303/insta_backend/helper"
 	"divyanshu050303/insta_backend/models"
+	"divyanshu050303/insta_backend/models/post"
 	"divyanshu050303/insta_backend/repository"
 	"net/http"
 	"time"
@@ -174,6 +175,17 @@ func (ctrl *FollowersControllers) GetUserProfile(c *fiber.Ctx) error {
 		helper.ApiResponse(c, http.StatusBadRequest, "Bad Request", nil)
 		return err
 	}
+	var posts []post.PostModel
+	err = ctrl.Repo.DB.Where("user_id=?", id).Find(&posts).Error
+	if err != nil {
+		helper.ApiResponse(c, http.StatusBadRequest, "Bad Request", nil)
+		return err
+	}
+
+	var mediaUrls []string
+	for _, post := range posts {
+		mediaUrls = append(mediaUrls, post.MediaURL)
+	}
 
 	userInfo := map[string]interface{}{
 		"id":             user.UserId,
@@ -181,6 +193,7 @@ func (ctrl *FollowersControllers) GetUserProfile(c *fiber.Ctx) error {
 		"userEmail":      user.UserEmail,
 		"followerCount":  followerCount,
 		"followingCount": followingCount,
+		"mediaUrls":      mediaUrls,
 	}
 	helper.ApiResponse(c, http.StatusOK, "Successfully fetched user profile", userInfo)
 

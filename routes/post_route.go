@@ -16,5 +16,6 @@ func SetUpPostRoute(app *fiber.App, db *gorm.DB) {
 	api.Post("/createPost/:userId", postController.CreatePost)
 
 	api.Get("/getPosts/:userId", postController.GetPostsByUserId)
+	api.Post("/uploadPost/:userId", postController.UploadPost)
 
 }
