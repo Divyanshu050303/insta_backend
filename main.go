@@ -42,10 +42,15 @@ func main() {
 	if err != nil {
 		log.Fatal("Count not migrate the databse")
 	}
+	err = post.MigrateComment(db)
+	if err != nil {
+		log.Fatal("Count not migrate the databse")
+	}
 	app := fiber.New()
 	routes.SetUpUserRoutes(app, db)
 	routes.SetupFollowerRoutes(app, db)
 	routes.SetUpPostRoute(app, db)
+	routes.SrtUpCommnetRoutes(app, db)
 	app.Listen(":8000")
 
 }
