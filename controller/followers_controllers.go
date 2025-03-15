@@ -22,6 +22,7 @@ func (ctrl *FollowersControllers) CreateFollower(c *fiber.Ctx) error {
 	err := helper.CheckUserIsLoggedInOrNot(c)
 	if err != nil {
 		helper.ApiResponse(c, http.StatusUnauthorized, "token is missing", nil)
+		return err
 	}
 	err = c.BodyParser(&follower)
 	if err != nil {
@@ -88,6 +89,7 @@ func (ctrl *FollowersControllers) GetFollowers(c *fiber.Ctx) error {
 	err := helper.CheckUserIsLoggedInOrNot(c)
 	if err != nil {
 		helper.ApiResponse(c, http.StatusUnauthorized, "token is missing", nil)
+		return err
 	}
 	var followers []models.Followers
 	err = ctrl.Repo.DB.Where("user_id=?", userId).Find(&followers).Error
@@ -120,6 +122,7 @@ func (ctrl *FollowersControllers) GetFollowing(c *fiber.Ctx) error {
 	err := helper.CheckUserIsLoggedInOrNot(c)
 	if err != nil {
 		helper.ApiResponse(c, http.StatusUnauthorized, "token is missing", nil)
+		return err
 	}
 	var followers []models.Followers
 	err = ctrl.Repo.DB.Where("follower_id=?", userId).Find(&followers).Error
