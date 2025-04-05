@@ -17,4 +17,5 @@ func SetupFollowerRoutes(app *fiber.App, db *gorm.DB) {
 	api.Get("/getFollowers/:userId", followersController.GetFollowers)
 	api.Get("/getFollowing/:userId", followersController.GetFollowing)
 	api.Get("/getUserProfile/:userId", followersController.GetUserProfile)
+	api.Get("/search", followersController.GetSearchResult)
 }

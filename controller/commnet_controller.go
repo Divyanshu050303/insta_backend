@@ -56,7 +56,7 @@ func (ctrl *CommentController) GetCommentsByPostId(c *fiber.Ctx) error {
 	limit, _ := strconv.Atoi(c.Query("limit", "10")) // Default to 10 comments per page
 
 	if page < 1 {
-		page = 1
+		page = 11
 	}
 	if limit < 1 || limit > 100 { // Prevent excessive limits
 		limit = 10

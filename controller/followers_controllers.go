@@ -6,6 +6,7 @@ import (
 	"divyanshu050303/insta_backend/models/post"
 	"divyanshu050303/insta_backend/repository"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -200,5 +201,34 @@ func (ctrl *FollowersControllers) GetUserProfile(c *fiber.Ctx) error {
 	}
 	helper.ApiResponse(c, http.StatusOK, "Successfully fetched user profile", userInfo)
 
+	return nil
+}
+
+func (ctrl *FollowersControllers) GetSearchResult(c *fiber.Ctx) error {
+	searchKey := c.Query("searchKey")
+	err := helper.CheckUserIsLoggedInOrNot(c)
+	if err != nil {
+		helper.ApiResponse(c, http.StatusUnauthorized, "token is missing", nil)
+		return err
+	}
+	if searchKey == "" {
+		helper.ApiResponse(c, http.StatusOK, "SuccessFully fetched user", nil)
+		return nil
+	}
+	var users []models.UserModels
+	err = ctrl.Repo.DB.Where("LOWER(user_name) LIKE ?", strings.ToLower(searchKey)+"%").Find(&users).Error
+	if err != nil {
+		helper.ApiResponse(c, http.StatusInternalServerError, "Internal Server error", nil)
+		return nil
+	}
+	var result []map[string]interface{}
+	for _, user := range users {
+		result = append(result, map[string]interface{}{
+			"id":        user.UserId,
+			"userName":  user.UserName,
+			"userEmail": user.UserEmail,
+		})
+	}
+	helper.ApiResponse(c, http.StatusOK, "SuccessFully fetched user", result)
 	return nil
 }
