@@ -50,5 +50,36 @@ func (ctrl *PostController) UploadPost(c *fiber.Ctx) error {
 
 }
 func (ctrl *PostController) GetPostsByUserId(c *fiber.Ctx) error {
+	id := c.Params("userId")
+	err := helper.CheckUserIsLoggedInOrNot(c)
+	if err != nil {
+		helper.ApiResponse(c, http.StatusUnauthorized, "Unauthorized", nil)
+		return nil
+	}
+	if id == "" {
+		helper.ApiResponse(c, http.StatusBadRequest, "Bad Requrest", nil)
+		return nil
+	}
+	var post []post.PostModel
+	err = ctrl.Repo.DB.Where("user_id=?", id).Find(&post).Error
+	if err != nil {
+		helper.ApiResponse(c, http.StatusInternalServerError, "Internal Server error", nil)
+		return nil
+	}
+	var result []map[string]interface{}
+	for _, post := range post {
+		result = append(result, map[string]interface{}{
+			"id":         post.Id,
+			"caption":    post.Caption,
+			"liskeCount": post.LikeCount,
+			"mediaType":  post.MediaType,
+			"mediaUrl":   post.MediaURL,
+			"createdAt":  post.CreatedAt,
+			"updatedAt":  post.UpdatedAt,
+		})
+
+	}
+	helper.ApiResponse(c, http.StatusOK, "Post fetched", result)
+
 	return nil
 }
